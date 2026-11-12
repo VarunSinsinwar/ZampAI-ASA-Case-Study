@@ -54,17 +54,17 @@ def process_invoice(file_path, original_filename, vendors, purchase_orders,
     fingerprint = file_fingerprint(file_path)
 
     if po_line_items is not None:
-    po_line_items = po_line_items.copy()
-    po_line_items.columns = [
-        str(c).strip().lower().strip()
-        for c in po_line_items.columns
-    ]
+        po_line_items = po_line_items.copy()
+        po_line_items.columns = [
+            str(c).strip().lower().strip()
+            for c in po_line_items.columns
+        ]
 
-    if "description" in po_line_items.columns:
-        po_line_items.rename(
-            columns={"description": "item_description"},
-            inplace=True
-        )
+        if "description" in po_line_items.columns:
+            po_line_items.rename(
+                columns={"description": "item_description"},
+                inplace=True
+            )
 
     def ocr_note(detail):
         if on_stage:
