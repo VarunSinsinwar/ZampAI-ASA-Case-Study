@@ -18,11 +18,28 @@ def _stage(stages, callback, name, detail, pct, status="completed"):
 def _check_columns(df, required, label):
     if df is None:
         raise ValueError(f"{label} CSV is missing.")
+
     df = df.copy()
-    df.columns = [str(c).strip().lower() for c in df.columns]
+    df.columns = [str(c).strip().lower().strip() for c in df.columns]
+
+    # Map alternative column names to the internal schema
+    aliases = {
+        "total": "total_amount",
+        "tax": "tax_amount",
+        "description": "item_description",
+    }
+
+    for old_name, new_name in aliases.items():
+        if old_name in df.columns and new_name not in df.columns:
+            df.rename(columns={old_name: new_name}, inplace=True)
+
     missing = [c for c in required if c not in df.columns]
+
     if missing:
-        raise ValueError(f"{label} CSV is missing required columns: {', '.join(missing)}")
+        raise ValueError(
+            f"{label} CSV is missing required columns: {', '.join(missing)}"
+        )
+
     return df
 
 def process_invoice(file_path, original_filename, vendors, purchase_orders,
@@ -35,6 +52,19 @@ def process_invoice(file_path, original_filename, vendors, purchase_orders,
                                            "currency", "total_amount", "status"], "purchase_orders")
     _stage(stages, on_stage, "Ingestion", f"Received {original_filename}; run ID {run_id}.", 8)
     fingerprint = file_fingerprint(file_path)
+
+    if po_line_items is not None:
+    po_line_items = po_line_items.copy()
+    po_line_items.columns = [
+        str(c).strip().lower().strip()
+        for c in po_line_items.columns
+    ]
+
+    if "description" in po_line_items.columns:
+        po_line_items.rename(
+            columns={"description": "item_description"},
+            inplace=True
+        )
 
     def ocr_note(detail):
         if on_stage:
