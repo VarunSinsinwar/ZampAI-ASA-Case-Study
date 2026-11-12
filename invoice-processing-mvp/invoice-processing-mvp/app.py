@@ -178,9 +178,9 @@ else:
 
 | File | Required columns |
 |---|---|
-| `vendors.csv` | `vendor_id`, `vendor_name`, `approved`, `currency`, `payment_terms` |
-| `purchase_orders.csv` | `po_number`, `vendor_id`, `vendor_name`, `po_date`, `currency`, `total_amount`, `status` |
-| `po_line_items.csv` | `po_number`, `item_description`, `quantity`, `unit_price`, `tax_rate` |
+| vendors.csv | vendor_id, vendor_name, approved, currency |
+| purchase_orders.csv | po_number, vendor_id, vendor_name, currency, total, status |
+| po_line_items.csv | po_number, vendor_id, description, quantity, unit_price, line_amount |
 
 Line items are optional for the MVP; the first two files are required for reliable PO matching.
 
