@@ -19,6 +19,19 @@ st.set_page_config(page_title="InvoiceFlow | AP Automation", page_icon="🧾", l
 
 ROOT = Path(__file__).parent
 settings = Settings.from_env(ROOT)
+
+# Read credentials from Streamlit Cloud secrets.
+# Environment variables still work for local development.
+try:
+    settings.gemini_api_key = st.secrets.get(
+        "GEMINI_API_KEY", settings.gemini_api_key
+    )
+    settings.gemini_model = st.secrets.get(
+        "GEMINI_MODEL", settings.gemini_model
+    )
+except Exception:
+    pass
+
 store = AuditStore(settings.database_path)
 
 st.markdown("""
@@ -69,8 +82,17 @@ if page == "Process invoice":
         with st.expander("Processing controls", expanded=True):
             tolerance = st.number_input("PO amount tolerance (%)", min_value=0.0, max_value=25.0,
                                          value=float(settings.tolerance_percent), step=0.5)
-            use_llm = st.toggle("Use optional Gemini extraction", value=settings.use_llm and bool(settings.gemini_api_key),
-                                help="Requires GEMINI_API_KEY. If unavailable, local extraction is used.")
+            use_llm = st.toggle(
+                "Use Gemini AI extraction",
+                value=settings.use_llm and bool(settings.gemini_api_key),
+                help="Uses Gemini to extract invoice fields from the complete OCR/PDF text."
+            )
+
+            if not settings.gemini_api_key:
+                st.warning(
+                    "Gemini API key is not configured. Add GEMINI_API_KEY "
+                    "in Streamlit Cloud → App settings → Secrets."
+                )
             st.caption("AI assists with reading the invoice. Approval rules remain deterministic.")
         run = st.button("▶ Process invoice", type="primary", disabled=invoice is None, use_container_width=True)
     with right:
