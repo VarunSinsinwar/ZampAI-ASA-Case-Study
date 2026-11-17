@@ -9,7 +9,7 @@ class Settings:
     database_path: Path
     tolerance_percent: float = 2.0
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.0-flash"
+    gemini_model: str = "gemini-2.5-flash"
     use_llm: bool = False
     min_pdf_text_chars: int = 40
     ocr_language: str = "eng"
@@ -26,7 +26,7 @@ class Settings:
             root_dir=root, data_dir=data_dir, database_path=db,
             tolerance_percent=float(os.getenv("PO_TOLERANCE_PERCENT", "2.0")),
             gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
-            gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
+            gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
             use_llm=os.getenv("USE_LLM", "false").lower() in {"1", "true", "yes"},
             min_pdf_text_chars=int(os.getenv("MIN_PDF_TEXT_CHARS", "40")),
             ocr_language=os.getenv("OCR_LANGUAGE", "eng"),
