@@ -62,7 +62,12 @@ def gemini_extract(text: str, api_key: str, model: str):
     if not text or not text.strip():
         raise ValueError("No invoice text was provided to Gemini.")
 
-    client = genai.Client(api_key=api_key)
+    client = genai.Client(
+    api_key=api_key,
+    http_options=types.HttpOptions(
+        api_version="v1beta"
+        )
+    )
 
     prompt = """
 You are an expert invoice data extraction system for accounts payable.
